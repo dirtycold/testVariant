@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    int count = 1'000;
+    int count = 1;
     auto start = std::chrono::system_clock::now();
 
     for (int i = 0; i < count; ++i)
@@ -37,11 +37,11 @@ int main()
         v4 = v1;
         cout << v4.type() << " " << v4.toString() << endl;
 
-        Value v5 (std::string ("Wrong"));
+        Value v5 ("Wrong");
         cout << v5 << endl;
 
         Value v6;
-        v6 = std::string ("Aloha");
+        v6 = "Aloha"s;
         cout << v6 << endl;
 
         Value v7 (200);
@@ -50,9 +50,11 @@ int main()
         Value v8 (true);
         cout << v8 << endl;
 
-
         Value v9 (2.71828);
         cout << v9 << endl;
+
+        Value v10 ("0"s);
+        cout << v10 << " " << v10.toBoolean() << endl;
     /*
     }
     catch (exception& e)
