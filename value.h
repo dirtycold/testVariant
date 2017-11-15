@@ -12,13 +12,13 @@
 class Value
 {
     using real = double;
-    using variant_t = mpark::variant <bool, int, real, std::string>;
+    using variant_t = mpark::variant <void*, bool, int, real, std::string>;
 
 public:
     enum class Type
     {
-        Invalid = -1,
-        Boolean = 0,
+        Invalid = 0,
+        Boolean = 1,
         Integer,
         Real,
         String,
