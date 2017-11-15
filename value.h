@@ -2,12 +2,11 @@
 #define VALUE_H
 
 #include <ios>
+#include <sstream>
 #include <ostream>
 #include <cmath>
 
 #include <variant/include/eggs/variant.hpp>
-
-const static std::string dummy {};
 
 class Value
 {
@@ -27,11 +26,29 @@ public:
 
     const variant_t& value () const { return m_value; }
 
-    const std::string& toString () const
+    const std::string toString () const
     {
-        if (type() != Type::String)
-            return dummy;
-        return eggs::variants::get<std::string> (m_value);
+        switch (type ())
+        {
+        case Type::String:
+            return eggs::variants::get<size_t(Type::String)> (m_value);
+            break;
+        case Type::Integer:
+            return std::to_string(eggs::variants::get<size_t(Type::Integer)> (m_value));
+            break;
+        case Type::Boolean:
+        {
+            std::ostringstream os;
+            os << std::boolalpha << eggs::variants::get<size_t(Type::Boolean)>(m_value);
+            return os.str ();
+            break;
+        }
+        case Type::Real:
+            return std::to_string(eggs::variants::get<size_t(Type::Real)> (m_value));
+            break;
+        default:
+            return std::string {};
+        }
     }
 
     int toInteger () const
@@ -39,13 +56,16 @@ public:
         switch (type ())
         {
         case Type::Integer:
-            return eggs::variants::get<int> (m_value);
+            return eggs::variants::get<size_t(Type::Integer)> (m_value);
             break;
         case Type::Boolean:
-            return int (eggs::variants::get<bool> (m_value));
+            return int (eggs::variants::get<size_t(Type::Boolean)> (m_value));
             break;
         case Type::Real:
-            return int (eggs::variants::get<real> (m_value));
+            return int (eggs::variants::get<size_t(Type::Real)> (m_value));
+            break;
+        case Type::String:
+            return atoi(eggs::variants::get<size_t(Type::String)> (m_value).c_str());
             break;
         default:
             return 0;
@@ -58,14 +78,22 @@ public:
         switch (type ())
         {
         case Type::Boolean:
-            return eggs::variants::get<bool> (m_value);
+            return eggs::variants::get<size_t(Type::Boolean)> (m_value);
             break;
         case Type::Integer:
-            return int (eggs::variants::get<bool> (m_value));
+            return bool (eggs::variants::get<size_t(Type::Integer)> (m_value));
             break;
         case Type::Real:
-            return real (eggs::variants::get<bool> (m_value));
+            return bool (eggs::variants::get<size_t(Type::Real)> (m_value));
             break;
+        case Type::String:
+        {
+            bool b;
+            std::istringstream is (eggs::variants::get<size_t(Type::String)> (m_value));
+            is >> std::boolalpha >> b;
+            return b;
+            break;
+        }
         default:
             return false;
             break;
@@ -77,13 +105,16 @@ public:
         switch (type ())
         {
         case Type::Real:
-            return eggs::variants::get<real> (m_value);
+            return eggs::variants::get<size_t(Type::Real)> (m_value);
             break;
         case Type::Integer:
-            return int (eggs::variants::get<real> (m_value));
+            return real (eggs::variants::get<size_t(Type::Integer)> (m_value));
             break;
         case Type::Boolean:
-            return bool (eggs::variants::get<real> (m_value));
+            return real (eggs::variants::get<size_t(Type::Boolean)> (m_value));
+            break;
+        case Type::String:
+            return atof (eggs::variants::get<size_t(Type::String)> (m_value).c_str ());
             break;
         default:
             return false;
