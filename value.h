@@ -2,16 +2,17 @@
 #define VALUE_H
 
 #include <ios>
+#include <sstream>
 #include <ostream>
 #include <cmath>
+#include <type_traits>
 
-#include <variant/include/eggs/variant.hpp>
-
-const static std::string dummy {};
+#include <variant/include/mpark/variant.hpp>
 
 class Value
 {
-    using variant_t = eggs::variant <bool, int, double, std::string>;
+    using real = double;
+    using variant_t = mpark::variant <bool, int, real, std::string>;
 
 public:
     enum class Type
@@ -23,29 +24,49 @@ public:
         String,
     };
 
-    using real = double;
-
     const variant_t& value () const { return m_value; }
 
-    const std::string& toString () const
+    const std::string toString () const
     {
-        if (type() != Type::String)
-            return dummy;
-        return eggs::variants::get<std::string> (m_value);
+        switch (type ())
+        {
+        case Type::String:
+            return mpark::get<size_t(Type::String)> (m_value);
+            break;
+        case Type::Integer:
+            return std::to_string(mpark::get<size_t(Type::Integer)> (m_value));
+            break;
+        case Type::Boolean:
+        {
+            std::ostringstream os;
+            os << std::boolalpha << mpark::get<size_t(Type::Boolean)>(m_value);
+            return os.str ();
+            break;
+        }
+        case Type::Real:
+            return std::to_string(mpark::get<size_t(Type::Real)> (m_value));
+            break;
+        default:
+            return std::string {};
+        }
     }
 
     int toInteger () const
     {
+
         switch (type ())
         {
         case Type::Integer:
-            return eggs::variants::get<int> (m_value);
+            return mpark::get<size_t(Type::Integer)> (m_value);
             break;
         case Type::Boolean:
-            return int (eggs::variants::get<bool> (m_value));
+            return int (mpark::get<size_t(Type::Boolean)> (m_value));
             break;
         case Type::Real:
-            return int (eggs::variants::get<real> (m_value));
+            return int (mpark::get<size_t(Type::Real)> (m_value));
+            break;
+        case Type::String:
+            return atoi(mpark::get<size_t(Type::String)> (m_value).c_str());
             break;
         default:
             return 0;
@@ -58,14 +79,22 @@ public:
         switch (type ())
         {
         case Type::Boolean:
-            return eggs::variants::get<bool> (m_value);
+            return mpark::get<size_t(Type::Boolean)> (m_value);
             break;
         case Type::Integer:
-            return int (eggs::variants::get<bool> (m_value));
+            return bool (mpark::get<size_t(Type::Integer)> (m_value));
             break;
         case Type::Real:
-            return real (eggs::variants::get<bool> (m_value));
+            return bool (mpark::get<size_t(Type::Real)> (m_value));
             break;
+        case Type::String:
+        {
+            bool b;
+            std::istringstream is (mpark::get<size_t(Type::String)> (m_value));
+            is >> std::boolalpha >> b;
+            return b;
+            break;
+        }
         default:
             return false;
             break;
@@ -77,13 +106,16 @@ public:
         switch (type ())
         {
         case Type::Real:
-            return eggs::variants::get<real> (m_value);
+            return mpark::get<size_t(Type::Real)> (m_value);
             break;
         case Type::Integer:
-            return int (eggs::variants::get<real> (m_value));
+            return real (mpark::get<size_t(Type::Integer)> (m_value));
             break;
         case Type::Boolean:
-            return bool (eggs::variants::get<real> (m_value));
+            return real (mpark::get<size_t(Type::Boolean)> (m_value));
+            break;
+        case Type::String:
+            return atof (mpark::get<size_t(Type::String)> (m_value).c_str ());
             break;
         default:
             return false;
@@ -93,7 +125,7 @@ public:
 
     Type type () const
     {
-        return Type (m_value.which ());
+        return Type (m_value.index());
     }
 
     Value () = default;
@@ -115,15 +147,6 @@ public:
         m_value = t;
     }
 
-    /*
-    template<typename T>
-    Value& operator= (T&& t)
-    {
-        value = t;
-        return *this;
-    }
-    */
-
     template<typename T>
     Value& operator= (const T& t)
     {
@@ -131,6 +154,14 @@ public:
         return *this;
     }
 
+    /*
+    template<typename T>
+    Value& operator= (T&& t)
+    {
+        m_value = std::forward<T> (t);
+        return *this;
+    }
+    */
 
 
 private:
