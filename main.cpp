@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    int count = 1'000;
+    int count = 1;
     auto start = std::chrono::system_clock::now();
 
     for (int i = 0; i < count; ++i)
