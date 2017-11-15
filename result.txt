@@ -1,0 +1,44 @@
+Eggs
+==
+
+```
+Type::String Hello World
+Type::Integer 46
+Type::Boolean false 0
+Type::String So what??? 0
+Type::Boolean true 1
+Type::Real 3.14159 3
+Type::Invalid
+Type::String Hello World
+Type::Boolean true
+Type::String Aloha
+Type::Integer 200
+Type::Boolean true
+Type::Real 2.71828
+Type::String 0 0
+test of 1 iterations in : 0 seconds.
+Press <RETURN> to close this window...
+```
+
+Mpark
+===
+
+```
+Type::String Hello World
+Type::Integer 46
+Type::Boolean false 0
+Type::String So what??? 0
+Type::Boolean true 1
+Type::Real 3.14159 3
+Type::Invalid
+Type::String Hello World
+Type::Boolean true
+Type::String Aloha
+Type::Integer 200
+Type::Boolean true
+Type::Real 2.71828
+Type::String 0 0
+test of 1 iterations in : 0 seconds.
+Press <RETURN> to close this window...
+```
+
